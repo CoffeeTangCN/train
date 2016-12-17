@@ -1,0 +1,92 @@
+<html>
+	<head>
+      <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+	</head>
+	<body>
+		<form name="userform" id="userform">
+			loginName:<input type="text" name="loginName" value=""/><br/>
+			loginPwd:<input type="text" name="loginPwd" value=""/><br/>
+			status:<input type="text" name="status" value=""/><br/>
+			name:<input type="text" name="name" value=""/><br/>
+			<button type="button" onclick="insert()" >insert </button>
+			
+			
+		</form>
+		
+		<form name="updateForm" id="updateForm">
+			loginName:<input type="text" name="loginName" value=""/><br/>
+			loginPwd:<input type="text" name="loginPwd" value=""/><br/>
+			status:<input type="text" name="status" value=""/><br/>
+			name:<input type="text" name="name" value=""/><br/>
+			<button type="button" onclick="update()" >update </button>
+			
+			
+		</form>
+		
+		
+		<form name="delForm" id="delForm">
+			id:<input type="text" name="userId" value=""/><br/>
+		
+			<button type="button" onclick="deleteUser()" >delete </button>
+			
+			
+		</form>
+		
+		<script>
+			function insert(){
+				var user = JSON.stringify($("#userform").serializeObject());
+				alert(user);
+				$.ajax({
+					url:"/jpa/rest/users",
+					type:"post",
+					dataType:"json",
+					contentType: 'application/json;charset=utf-8',
+					data:user,
+					onsucess:function(data){
+						alert(JSON.stringify(data));
+					}
+				});
+			}
+			function update(){
+				var user = JSON.stringify($("#updateForm").serializeObject());
+				$.ajax({
+					url:"/jpa/rest/users/1",
+					type:"PATCH",
+					dataType:"json",
+					contentType: 'application/json;charset=utf-8',
+					data:user,
+					onsucess:function(data){
+						alert(JSON.stringify(data));
+
+					}
+				});
+			}
+			function deleteUser(){
+				$.ajax({
+					url:"/jpa/rest/users/1",
+					type:"DELETE",
+					dataType:"json",
+					onsucess:function(data){
+						alert(JSON.stringify(data));
+					}
+				});
+			}
+			$.fn.serializeObject = function()
+			{
+			    var o = {};
+			    var a = this.serializeArray();
+			    $.each(a, function() {
+			        if (o[this.name] !== undefined) {
+			            if (!o[this.name].push) {
+			                o[this.name] = [o[this.name]];
+			            }
+			            o[this.name].push(this.value || '');
+			        } else {
+			            o[this.name] = this.value || '';
+			        }
+			    });
+			    return o;
+			};
+		</script>
+	</body>
+</html>
