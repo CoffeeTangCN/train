@@ -1,0 +1,6 @@
+coffee1,18
+coffee2,15
+coffee3,19
+coffee4,20
+coffee5,12
+coffee6,10
