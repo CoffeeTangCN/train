@@ -17,7 +17,7 @@ import chances.demo.jpa.entity.User;
  * @author chenxx
  *
  */
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>,CustomUserRepository {
 
 	public User findByLoginName(String loginName);
 

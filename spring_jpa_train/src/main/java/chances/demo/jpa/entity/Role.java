@@ -4,6 +4,7 @@
 package chances.demo.jpa.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,20 +13,26 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Proxy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 
 /**
  * @author chenxx
  *
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = "jpa_role")
 @Proxy
 public class Role implements Serializable {
 
-	/**
-	 * serialVersionUID.
-	 */
-	private static final long serialVersionUID = 6398393158343936469L;
+	
+	@CreatedDate
+	private Date createdDate;
+	
+	
+	@LastModifiedBy
+	private Date modiftyDate;
 
 	@Id
 	@GeneratedValue
@@ -60,6 +67,24 @@ public class Role implements Serializable {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Date getModiftyDate() {
+		return modiftyDate;
+	}
+
+	public void setModiftyDate(Date modiftyDate) {
+		this.modiftyDate = modiftyDate;
 	}
 
 }
