@@ -3,9 +3,9 @@ package chances.traing.jdk8;
 public class Person {
 	private String name;
 	private int age;
-	public Person(String string, String string2) {
+	public Person(String string,int age) {
 		this.name = string;
-		this.age = Integer.parseInt(string2);
+		this.age = age;
 	}
 	public String getName() {
 		return name;

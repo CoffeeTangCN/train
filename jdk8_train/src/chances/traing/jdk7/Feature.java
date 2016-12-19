@@ -12,10 +12,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.BitSet;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Feature {
+	
+	
 	public void tryResource() throws FileNotFoundException, IOException {
-		try (OutputStream out = new FileOutputStream("test.txt")) {
+		try (OutputStream out = new FileOutputStream("person.txt")) {
 
 		}
 
@@ -27,7 +31,6 @@ public class Feature {
 		} catch (MalformedURLException | FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -47,11 +50,26 @@ public class Feature {
 			
 			Files.createTempFile(null,".txt");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getGlobal().log(Level.WARNING, e.getMessage(), e);;
 		}
 
 	}
+
+	
+	
+	public void processBuilder(){
+		ProcessBuilder builder = new ProcessBuilder("notepad.exe", "person.txt");
+		builder.redirectError(Paths.get("error.log").toFile());
+		builder.redirectOutput(Paths.get("out.log").toFile());
+		Process process;
+		try {
+			process = builder.start();
+			process.waitFor();
+		} catch (IOException  |InterruptedException e)  {
+			Logger.getGlobal().log(Level.WARNING, e.getMessage(), e);;
+		}
+	
+}
 	
 	public void object(){
 			Objects.isNull(null);

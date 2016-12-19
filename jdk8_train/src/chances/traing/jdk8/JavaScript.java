@@ -12,11 +12,8 @@ public class JavaScript {
 		try {
 			result = engine.eval("'hello world'.length");
 		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(result);
-		
-		//engine.eval(reader, n);
+		System.out.println(result);		
 	}
 }
