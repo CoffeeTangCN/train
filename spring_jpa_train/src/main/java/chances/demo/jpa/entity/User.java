@@ -46,7 +46,12 @@ public class User implements Serializable {
 	private int status;
 
 	@Column(name = "create_time")
-	private Date createTime;
+	private Date createTime = new Date();
+	
+	
+
+	@Column(name = "email")
+	private String email;
 
 	public Long getId() {
 		return id;
@@ -90,6 +95,14 @@ public class User implements Serializable {
 
 	public Date getCreateTime() {
 		return createTime;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public void setCreateTime(Date createTime) {
