@@ -1,92 +1,169 @@
 <html>
 	<head>
-      <script src="http://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+	  <link href="css/bootstrap.min.css" rel="stylesheet">
+      <script src="js/jquery-2.1.1.js"></script>
+       <script src="js/bootstrap.min.js"></script>
+      <script src="js/jquery.serialize-object.min.js"></script>
+      <script src="js/vue.js"></script>
 	</head>
 	<body>
-		<form name="userform" id="userform">
-			loginName:<input type="text" name="loginName" value=""/><br/>
-			loginPwd:<input type="text" name="loginPwd" value=""/><br/>
-			status:<input type="text" name="status" value=""/><br/>
-			name:<input type="text" name="name" value=""/><br/>
-			<button type="button" onclick="insert()" >insert </button>
-			
-			
+		
+		<div  id="userTable" class="mail-box">
+				<div class="mail-tools tooltip-demo m-t-md">
+					<div class="btn-group pull-left">
+							{{pageInfo.number}}/{{pageInfo.totalPages}} 
+							 <button class="btn btn-white btn-sm" onclick="" > 新建</button>
+					</div>
+			        <div class="btn-group pull-right">
+			            <button class="btn btn-white btn-sm" onclick="userTable.priv()" >上页</button>
+			            <button class="btn btn-white btn-sm" onclick="userTable.next()">下页</button>
+			        </div>
+				</div>
+				
+		       <table class="table table-hover" >
+		       <thead>
+		       	<tr>		       			
+		       		<td></td>
+		       		<td>姓名</td>
+		       		<td>登录名</td>
+		       		<td>邮件</td>
+		       		<td>建立时间</td>
+		       		<td>操作</td>
+		       	</tr>
+		       </thead>
+		       <tbody id="contents">
+		      	 	<tr  v-for="item in contents">
+		      		 <td><input type="checkbox"> </td>
+		      		 <td>{{item.name}}</td>
+		      		 <td>{{item.loginName}}</td>
+		      		 <td>{{item.email}}</td>
+		      		 <td>{{item.createTime}}</td>
+		      		
+		      		<td>  		
+		      			 <button v-on:click="deleteUser(item)" >删除</button>	
+		      		</td>
+		    	   </tr>
+		       </tbody>
+		       </table>
+		</div>
+		
+		<form name="userform" id="userform" role="form">
+			<input type="hidden" name="id" value=""/>
+			<input type="hidden" name="status" value="1"/>
+			<div class="form-group">
+		        <label for="inputName">姓名</label>
+		        <input type="text" class="form-control" id="inputName" name="name" placeholder="姓名">
+     		 </div>		
+  			<div class="form-group">
+		        <label for="inputLoginName">登录名</label>
+		        <input type="text" class="form-control" id="inputLoginName" name="loginName" placeholder="loginname">
+     		 </div>
+    			<div class="form-group">
+		        <label for="inputPasswd">密码</label>
+		        <input type="password" class="form-control" id="inputPasswd" name="loginPwd" placeholder="password">
+     		 </div>
+    		<div class="form-group">
+		        <label for="exampleInputEmail">邮箱</label>
+		        <input type="email" class="form-control" id="exampleInputEmail" name="email" placeholder="邮箱">
+     		 </div>		
+     		   <button type="button" onclick="userTable.insert()" class="btn btn-default">提交</button> 		 
 		</form>
 		
-		<form name="updateForm" id="updateForm">
-			loginName:<input type="text" name="loginName" value=""/><br/>
-			loginPwd:<input type="text" name="loginPwd" value=""/><br/>
-			status:<input type="text" name="status" value=""/><br/>
-			name:<input type="text" name="name" value=""/><br/>
-			<button type="button" onclick="update()" >update </button>
+		<script>		
+		var userTable = new Vue({
+			  el: '#userTable',
+			  data: {
+			  	url :"http://localhost:8080/jpa/rest/users?page=0&size=10",
+			    nextUrl:null,
+			    privUrl:null,
+			    contents: [
+			    ],
+			    pageInfo:{number:0,totalPages:0,size:0,totalElements:0},
+			    size:40,
+			    selected:null
+			  },
+			  created: function () { 
+    			this.init() 
+  			  }, 
+     				
+			  methods:{
+			 
+			 	 init:function(){
+			 		this.load(this.url);
+			 	 },
+			 	 load:function(url){
 			
-			
-		</form>
+			 	 	var _self = this;
+			 	 	$.ajax({
+			 	 	    type:"GET",
+			 	 	    url:url,
+			 	 	    success:function(data){
+			 	 	    	_self.contents = data._embedded.users;
+			 	 	    	if(data.page){
+			 	 	    		_self.pageInfo = data.page;
+			 	 	    	}else{
+			 	 	    		_self.pageInfo={number:_self.contents.length,totalPages:1,size:_self.contents.length,totalElements:_self.contents.length};
+			 	 	    	}
+			 	 	    	_self.links = data._links;
+			 	 	    }
+			 	 	})
+			 	 },
+			 	 detail:function(content){
+			 	 	showJsonDialog(content.code);
+			 	 },
+			 	 collect:function(item){
+			 	 	doCollect(item);
+			 	 },
+			 	 next:function(){
+			 	    if(this.links.next){
+			 	 	 this.load(this.links.next.href);
+			 	 	}
+			 	 },
+			 	 priv:function(){
+			 	   if(this.links.prev){
+			 	 	this.load(this.links.prev.href);
+			 	 	}
+			 	 },
+			 	 insert:function(){
+					var user =$("#userform").serializeJSON();
+					$.ajax({
+						url:"/jpa/rest/users",
+						type:"post",
+						dataType:"json",
+						contentType: 'application/json;charset=utf-8',
+						data:user,
+						success:function(data){
+							alert(JSON.stringify(data));
+						}
+					});
+				},
+				update:function(item){
+					var user = $("#updateForm").serializeJSON();
+					$.ajax({
+						url:item._links.self,
+						type:"PATCH",
+						dataType:"json",
+						contentType: 'application/json;charset=utf-8',
+						data:user,
+						onsucess:function(data){
+							alert(JSON.stringify(data));
+	
+						}
+					});
+				},
+				deleteUser:function(item){
+					$.ajax({
+						url:item._links.self,
+						type:"DELETE",
+						dataType:"json",
+						onsucess:function(data){
+							alert(JSON.stringify(data));
+						}
+					});
+				}
+			  }
+			})
+</script>
 		
-		
-		<form name="delForm" id="delForm">
-			id:<input type="text" name="userId" value=""/><br/>
-		
-			<button type="button" onclick="deleteUser()" >delete </button>
-			
-			
-		</form>
-		
-		<script>
-			function insert(){
-				var user = JSON.stringify($("#userform").serializeObject());
-				alert(user);
-				$.ajax({
-					url:"/jpa/rest/users",
-					type:"post",
-					dataType:"json",
-					contentType: 'application/json;charset=utf-8',
-					data:user,
-					onsucess:function(data){
-						alert(JSON.stringify(data));
-					}
-				});
-			}
-			function update(){
-				var user = JSON.stringify($("#updateForm").serializeObject());
-				$.ajax({
-					url:"/jpa/rest/users/1",
-					type:"PATCH",
-					dataType:"json",
-					contentType: 'application/json;charset=utf-8',
-					data:user,
-					onsucess:function(data){
-						alert(JSON.stringify(data));
-
-					}
-				});
-			}
-			function deleteUser(){
-				$.ajax({
-					url:"/jpa/rest/users/1",
-					type:"DELETE",
-					dataType:"json",
-					onsucess:function(data){
-						alert(JSON.stringify(data));
-					}
-				});
-			}
-			$.fn.serializeObject = function()
-			{
-			    var o = {};
-			    var a = this.serializeArray();
-			    $.each(a, function() {
-			        if (o[this.name] !== undefined) {
-			            if (!o[this.name].push) {
-			                o[this.name] = [o[this.name]];
-			            }
-			            o[this.name].push(this.value || '');
-			        } else {
-			            o[this.name] = this.value || '';
-			        }
-			    });
-			    return o;
-			};
-		</script>
 	</body>
 </html>
